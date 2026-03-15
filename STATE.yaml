@@ -5,42 +5,69 @@
 - **项目名称**: my-info-vw (消息核查器)
 - **目标**: 基于 LangChain/LangGraph 构建 AI Agents Team，用于多渠道验证核查给定消息的准确性
 - **阶段一**: CLI 命令行版 ✅ 完成
-- **阶段二**: WebApp
+- **阶段二**: WebApp ✅ 完成
 
 ---
 
-## 阶段一：CLI 版本 ✅ 完成
+## 已完成功能
 
-### 已完成
+### 阶段一：CLI 版本 ✅
 
 - [x] 项目初始化 (uv)
 - [x] 4 个 AI Agent
+  - MessageParserAgent
+  - SearchQueryAgent
+  - VerifierAgent
+  - SynthesizerAgent
 - [x] LangGraph 工作流
-- [x] 多渠道搜索集成:
-  - [x] Tavily Search
-  - [x] Jina Search  
-  - [x] News Search
-  - [x] SearchAggregator (聚合搜索)
+- [x] 多渠道搜索
+  - Tavily Search
+  - Jina Search
+  - News Search
+  - SearchAggregator (聚合)
 - [x] CLI 工具
+  - 普通输出模式
+  - JSONL 输出模式 (--jsonl)
 - [x] 16 个测试用例 (全部通过)
-- [x] Git 提交
+- [x] 代码质量改进 (TypedDict, JSON 解析)
+
+### 阶段二：WebApp ✅
+
+- [x] Next.js 项目初始化
+- [x] React + Tailwind CSS UI
+- [x] API 路由 (/api/check)
+- [x] 调用 Python CLI 获取 JSONL
 
 ---
 
-## 阶段二：WebApp
+## 使用方式
 
-- [ ] 后端 API 设计
-- [ ] Next.js 项目初始化
-- [ ] 前端 UI 构建
-- [ ] 前后端集成
+### CLI
+```bash
+cd ~/projects/my-info-vw
+./info-check.sh "要核查的消息"
+
+# JSONL 输出
+uv run python info-check.py "消息" --jsonl
+```
+
+### WebApp
+```bash
+cd ~/projects/my-info-vw/webapp
+bun run dev
+```
+
+---
+
+## Git 提交记录
+
+已推送到 https://github.com/clarencep/my-info-vw
 
 ---
 
 ## 当前进度
 
-**状态**: 阶段一完成 ✅
-
-**最新**: 多渠道搜索已集成
+**状态**: 阶段一 + 阶段二 完成 ✅
 
 ---
 
@@ -48,4 +75,7 @@
 
 - 2026-03-16 00:22: 项目启动
 - 2026-03-16 01:00: 阶段一完成
-- 2026-03-16 01:10: 多渠道搜索集成完成
+- 2026-03-16 01:10: 多渠道搜索集成
+- 2026-03-16 01:30: JSONL 输出支持
+- 2026-03-16 01:40: 阶段二 WebApp 完成
+- 2026-03-16 01:50: 代码改进和 push
