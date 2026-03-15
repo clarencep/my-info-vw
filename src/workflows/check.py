@@ -7,7 +7,7 @@ from ..agents.message_parser import MessageParserAgent
 from ..agents.search_query import SearchQueryAgent
 from ..agents.verifier import VerifierAgent
 from ..agents.synthesizer import SynthesizerAgent
-from ..search.tavily_search import get_search_client
+from ..search.aggregator import get_aggregator
 
 
 class CheckState(TypedDict):
@@ -21,14 +21,14 @@ class CheckState(TypedDict):
 
 
 class InfoCheckWorkflow:
-    """LangGraph-based info checking workflow."""
+    """LangGraph-based info checking workflow with multi-channel search."""
     
     def __init__(self):
         self.parser = MessageParserAgent()
         self.query_generator = SearchQueryAgent()
         self.verifier = VerifierAgent()
         self.synthesizer = SynthesizerAgent()
-        self.search_client = get_search_client()
+        self.search_aggregator = get_aggregator()
         
         self.graph = self._build_graph()
     
@@ -66,17 +66,17 @@ class InfoCheckWorkflow:
         return {"queries": queries}
     
     def _search_node(self, state: CheckState) -> CheckState:
-        """Execute searches."""
+        """Execute multi-channel search."""
         queries = state.get("queries", [])
-        all_results = []
         
-        for q in queries[:3]:  # Limit to 3 queries
-            query = q.get("query", "")
-            try:
-                results = self.search_client.search(query, max_results=3)
-                all_results.extend(results)
-            except Exception as e:
-                print(f"Search error for '{query}': {e}")
+        # Extract query strings
+        query_strings = [q.get("query", "") for q in queries[:3]]
+        
+        # Use aggregator to search across all sources
+        all_results = self.search_aggregator.search_parallel(
+            query_strings,
+            max_per_source=2
+        )
         
         return {"search_results": all_results}
     
