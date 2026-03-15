@@ -1,5 +1,8 @@
 """Verification agent - analyzes search results and determines fact accuracy."""
 
+import json
+import re
+from typing import TypedDict, List, Optional, Any
 from .base import BaseAgent
 
 SYSTEM_PROMPT = """你是一个事实核查专家。你的任务是基于搜索结果，判断给定消息的准确性。
@@ -29,13 +32,66 @@ SYSTEM_PROMPT = """你是一个事实核查专家。你的任务是基于搜索�
 注意：如果没有搜索结果，请返回 UNVERIFIABLE。"""
 
 
+class SourceInfo(TypedDict):
+    """Source information."""
+    title: str
+    url: str
+    reliability: str
+
+
+class VerificationResult(TypedDict):
+    """Verification result structure."""
+    verdict: str
+    confidence: float
+    supporting_evidence: List[str]
+    contradicting_evidence: List[str]
+    analysis: str
+    sources: List[SourceInfo]
+    raw_response: Optional[str]
+
+
+def extract_json(response: str) -> Optional[dict]:
+    """Safely extract JSON from LLM response."""
+    if "```json" in response:
+        start = response.find("```json") + 7
+        end = response.find("```", start)
+        if end > start:
+            try:
+                return json.loads(response[start:end].strip())
+            except json.JSONDecodeError:
+                pass
+    
+    try:
+        return json.loads(response.strip())
+    except json.JSONDecodeError:
+        pass
+    
+    # Try to find first complete JSON
+    brace_count = 0
+    start_idx = None
+    for i, char in enumerate(response):
+        if char == '{':
+            if start_idx is None:
+                start_idx = i
+            brace_count += 1
+        elif char == '}':
+            brace_count -= 1
+            if brace_count == 0 and start_idx is not None:
+                try:
+                    return json.loads(response[start_idx:i+1])
+                except json.JSONDecodeError:
+                    pass
+    
+    return None
+
+
 class VerifierAgent(BaseAgent):
     """Agent that verifies facts based on search results."""
     
     def __init__(self):
         super().__init__(SYSTEM_PROMPT, temperature=0.3)
     
-    def verify(self, message: str, search_results: list) -> dict:
+    def verify(self, message: str, search_results: List[dict]) -> VerificationResult:
         """Verify message against search results."""
         # Format search results
         results_text = "\n\n".join([
@@ -55,20 +111,25 @@ class VerifierAgent(BaseAgent):
         response = self.run(prompt)
         
         # Try to parse JSON
-        import json
-        import re
-        
-        json_match = re.search(r'\{[\s\S]*\}', response)
-        if json_match:
-            try:
-                return json.loads(json_match.group())
-            except json.JSONDecodeError:
-                pass
+        parsed = extract_json(response)
+        if parsed:
+            return VerificationResult(
+                verdict=parsed.get("verdict", "UNVERIFIABLE"),
+                confidence=float(parsed.get("confidence", 0.0)),
+                supporting_evidence=parsed.get("supporting_evidence", []),
+                contradicting_evidence=parsed.get("contradicting_evidence", []),
+                analysis=parsed.get("analysis", ""),
+                sources=parsed.get("sources", []),
+                raw_response=None
+            )
         
         # Fallback
-        return {
-            "verdict": "UNVERIFIABLE",
-            "confidence": 0.0,
-            "analysis": "解析失败",
-            "raw_response": response
-        }
+        return VerificationResult(
+            verdict="UNVERIFIABLE",
+            confidence=0.0,
+            supporting_evidence=[],
+            contradicting_evidence=[],
+            analysis="解析失败",
+            sources=[],
+            raw_response=response
+        )
