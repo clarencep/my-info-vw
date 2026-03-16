@@ -9,11 +9,19 @@ Usage:
 
 import sys
 import json
+import logging
 import argparse
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+# Configure logging for all modules
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)-5s [%(name)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 from src.workflows.check import create_workflow
 
