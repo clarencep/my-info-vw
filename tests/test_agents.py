@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+@pytest.mark.needs_real_llm
 def test_base_agent_import():
     """Test base agent can be imported."""
     from src.agents.base import BaseAgent, get_llm_manager
@@ -14,6 +15,7 @@ def test_base_agent_import():
     assert get_llm_manager is not None
 
 
+@pytest.mark.needs_real_llm
 def test_get_llm():
     """Test LLM manager can be created and returns ChatOpenAI."""
     from src.agents.base import get_llm_manager
@@ -23,6 +25,7 @@ def test_get_llm():
     assert isinstance(llm, ChatOpenAI)
 
 
+@pytest.mark.needs_real_llm
 def test_message_parser_agent():
     """Test message parser agent."""
     from src.agents.message_parser import MessageParserAgent
@@ -34,6 +37,7 @@ def test_message_parser_agent():
     assert "main_claim" in result
 
 
+@pytest.mark.needs_real_llm
 def test_search_query_agent():
     """Test search query generator."""
     from src.agents.search_query import SearchQueryAgent
@@ -50,6 +54,7 @@ def test_search_query_agent():
     assert len(queries) > 0
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_agent():
     """Test verifier agent."""
     from src.agents.verifier import VerifierAgent
@@ -69,6 +74,7 @@ def test_verifier_agent():
     assert "verdict" in result
 
 
+@pytest.mark.needs_real_llm
 def test_synthesizer_agent():
     """Test synthesizer agent."""
     from src.agents.synthesizer import SynthesizerAgent

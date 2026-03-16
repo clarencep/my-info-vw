@@ -26,6 +26,7 @@ def test_news_search_import():
     assert NewsSearch is not None
 
 
+@pytest.mark.needs_real_llm
 def test_aggregator_creation():
     """Test aggregator can be created."""
     from src.search.aggregator import get_aggregator
