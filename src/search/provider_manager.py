@@ -31,8 +31,9 @@ class SearchProviderManager:
             if project_root:
                 config_path = Path(project_root) / "config" / "search.yaml"
             else:
-                # Walk up from this file to find config/
-                config_path = Path(__file__).resolve().parent.parent.parent / "config" / "search.yaml"
+                # Use centralized config root (respects MY_INFO_VW_CONFIG_DIR)
+                from src.config import get_config_root
+                config_path = get_config_root() / "search.yaml"
         self.config_path = Path(config_path)
         self.project_root = Path(project_root) if project_root else self.config_path.parent.parent
         self._config: dict[str, Any] | None = None
