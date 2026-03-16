@@ -9,16 +9,18 @@ load_dotenv()
 
 def test_base_agent_import():
     """Test base agent can be imported."""
-    from src.agents.base import BaseAgent, get_llm
+    from src.agents.base import BaseAgent, get_llm_manager
     assert BaseAgent is not None
-    assert get_llm is not None
+    assert get_llm_manager is not None
 
 
 def test_get_llm():
-    """Test LLM can be created."""
-    from src.agents.base import get_llm
-    llm = get_llm()
-    assert llm is not None
+    """Test LLM manager can be created and returns ChatOpenAI."""
+    from src.agents.base import get_llm_manager
+    from langchain_openai import ChatOpenAI
+    mgr = get_llm_manager()
+    llm = mgr.get_llm()
+    assert isinstance(llm, ChatOpenAI)
 
 
 def test_message_parser_agent():
