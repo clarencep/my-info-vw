@@ -1,0 +1,49 @@
+# 搜索 Provider 配置
+# 每个 provider 定义一个 CLI 命令，遵循统一协议
+
+providers:
+  # 内置 Provider 示例
+  - name: tavily
+    enabled: true
+    command: "src/search/providers/tavily_cli.py"
+    env:
+      TAVILY_API_KEY: "${TAVILY_API_KEY}"
+    description: "Tavily AI Search"
+
+  - name: jina
+    enabled: true
+    command: "src/search/providers/jina_cli.py"
+    env:
+      JINA_API_KEY: "${JINA_API_KEY}"
+    description: "Jina AI Search"
+
+  - name: brave
+    enabled: false
+    command: "src/search/providers/brave_cli.py"
+    env:
+      BRAVE_API_KEY: "${BRAVE_API_KEY}"
+    description: "Brave Web Search"
+
+  - name: bing
+    enabled: false
+    command: "src/search/providers/bing_cli.py"
+    env:
+      BING_API_KEY: "${BING_API_KEY}"
+    description: "Bing Web Search"
+
+  - name: baidu
+    enabled: false
+    command: "src/search/providers/baidu_cli.py"
+    env: {}
+    description: "Baidu Search (no API key needed)"
+
+# 搜索时的 Provider 优先级/顺序
+search_order:
+  - tavily
+  - jina
+
+# 每个 provider 最大返回结果数
+max_results_per_provider: 5
+
+# 总结果数上限（聚合去重后）
+max_total_results: 15
