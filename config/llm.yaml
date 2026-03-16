@@ -1,0 +1,30 @@
+providers:
+  - name: bigmodel-glm47
+    api_base: https://open.bigmodel.cn/api/coding/paas/v4
+    api_key_env: OPENAI_API_KEY
+    models:
+      - name: glm-4.7
+        temperature: 0.7
+      - name: glm-4.5
+        temperature: 0.7
+
+  - name: bigmodel-light
+    api_base: https://open.bigmodel.cn/api/coding/paas/v4
+    api_key_env: OPENAI_API_KEY
+    models:
+      - name: glm-4.5-air
+        temperature: 0.7
+
+fallback_order:
+  - bigmodel-glm47/glm-4.7
+  - bigmodel-glm47/glm-4.5
+  - bigmodel-light/glm-4.5-air
+
+retry_on_error_codes:
+  - 1301
+  - 1302
+  - 429
+  - 500
+  - 503
+
+max_retries_per_model: 1
