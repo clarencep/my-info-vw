@@ -1,11 +1,14 @@
 """Multi-channel search aggregator."""
 
+import logging
 from typing import List, Dict, Any
 from pathlib import Path
 
 from .tavily_search import TavilySearch
 from .jina_search import JinaSearch
 from .news_search import NewsSearch
+
+logger = logging.getLogger(__name__)
 
 
 class SearchAggregator:
@@ -31,17 +34,17 @@ class SearchAggregator:
         try:
             self.clients.append(("tavily", TavilySearch()))
         except Exception as e:
-            print(f"Tavily not available: {e}")
+            logger.warning("Tavily not available: %s", e)
 
         try:
             self.clients.append(("jina", JinaSearch()))
         except Exception as e:
-            print(f"Jina not available: {e}")
+            logger.warning("Jina not available: %s", e)
 
         try:
             self.clients.append(("news", NewsSearch()))
         except Exception as e:
-            print(f"News not available: {e}")
+            logger.warning("News not available: %s", e)
 
     @property
     def provider_manager(self):
@@ -67,9 +70,9 @@ class SearchAggregator:
                 for r in results:
                     r["search_source"] = source_name
                 all_results.extend(results)
-                print(f"[{source_name}] Found {len(results)} results")
+                logger.info("[%s] Found %d results", source_name, len(results))
             except Exception as e:
-                print(f"[{source_name}] Error: {e}")
+                logger.error("[%s] Error: %s", source_name, e)
 
         # Remove duplicates based on URL
         seen_urls = set()
