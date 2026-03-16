@@ -64,9 +64,15 @@ class TestConfigLoading:
                     "api_base": "https://api.test.com/v1",
                     "api_key_env": "NONEXISTENT_API_KEY_12345",
                     "models": [{"name": "m1"}],
-                }
+                },
+                {
+                    "name": "valid-provider",
+                    "api_base": "https://api.test.com/v1",
+                    "api_key_env": "OPENAI_API_KEY",
+                    "models": [{"name": "m2"}],
+                },
             ],
-            "fallback_order": ["no-key-provider/m1"],
+            "fallback_order": ["no-key-provider/m1", "valid-provider/m2"],
         }
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
@@ -75,6 +81,7 @@ class TestConfigLoading:
             mgr = LLMManager(config_path=Path(f.name))
 
         assert "no-key-provider" not in mgr._providers
+        assert "valid-provider" in mgr._providers
         os.unlink(f.name)
 
     def test_validate_fallback_order_unknown_entries(self, caplog):
@@ -95,6 +102,59 @@ class TestConfigLoading:
         assert any("invalid fallback_order entry" in r.message for r in caplog.records)
         assert any("unknown provider" in r.message for r in caplog.records)
         os.unlink(f.name)
+
+    def test_all_keys_missing_raises_error(self):
+        """Test RuntimeError when all providers have missing API keys."""
+        from src.llm.manager import LLMManager
+
+        cfg = {
+            "providers": [
+                {
+                    "name": "p1",
+                    "api_base": "https://api.test.com/v1",
+                    "api_key_env": "NONEXISTENT_KEY_A",
+                    "models": [{"name": "m1"}],
+                },
+                {
+                    "name": "p2",
+                    "api_base": "https://api.test.com/v1",
+                    "api_key_env": "NONEXISTENT_KEY_B",
+                    "models": [{"name": "m2"}],
+                },
+            ],
+            "fallback_order": ["p1/m1", "p2/m2"],
+        }
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+            yaml.dump(cfg, f)
+            f.flush()
+            with pytest.raises(RuntimeError, match="No usable providers"):
+                LLMManager(config_path=Path(f.name))
+            os.unlink(f.name)
+
+    def test_placeholder_key_skipped(self):
+        """Test provider is skipped when API key is all asterisks."""
+        from src.llm.manager import LLMManager
+
+        cfg = {
+            "providers": [
+                {
+                    "name": "placeholder-provider",
+                    "api_base": "https://api.test.com/v1",
+                    "api_key_env": "OPENAI_API_KEY",
+                    "models": [{"name": "m1"}],
+                },
+            ],
+            "fallback_order": ["placeholder-provider/m1"],
+        }
+
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
+            yaml.dump(cfg, f)
+            f.flush()
+            with patch.dict(os.environ, {"OPENAI_API_KEY": "*********"}):
+                with pytest.raises(RuntimeError, match="No usable providers"):
+                    LLMManager(config_path=Path(f.name))
+            os.unlink(f.name)
 
 
 class TestFallback:

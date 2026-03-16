@@ -73,13 +73,14 @@ class LLMManager:
             cfg = yaml.safe_load(f) or {}
 
         # Parse providers
+        all_skipped = True
         for prov in cfg.get("providers", []):
             name = prov["name"]
             env_key = prov.get("api_key_env", "OPENAI_API_KEY")
             api_key = os.getenv(env_key, "")
 
-            # [P0] API Key pre-check
-            if not api_key:
+            # [P0] API Key pre-check: skip if missing, empty, or placeholder (all asterisks)
+            if not api_key or set(api_key.strip()) == {"*"}:
                 logger.warning(
                     "[LLM] API key not set for provider '%s' (env var: %s), skipping",
                     name, env_key,
@@ -91,6 +92,13 @@ class LLMManager:
                 "api_key": api_key,
                 "models": {m["name"]: m.get("temperature", 0.7) for m in prov.get("models", [])},
             }
+            all_skipped = False
+
+        if all_skipped and cfg.get("providers"):
+            raise RuntimeError(
+                "[LLM] No usable providers: all API keys are missing or unset. "
+                "Please configure at least one provider's API key in your environment."
+            )
 
         self._fallback_order = cfg.get("fallback_order", [])
         self._retry_on_error_codes = cfg.get("retry_on_error_codes", [1301, 1302, 429, 500, 503])
