@@ -16,9 +16,12 @@ class SearchAggregator:
     """
 
     def __init__(self):
-        self._config_path = Path(__file__).resolve().parent.parent / "config" / "search.yaml"
+        from src.config import get_config_root, get_project_root
+
+        self._config_path = get_config_root() / "search.yaml"
         self._use_provider_manager = self._config_path.exists()
         self._manager = None
+        self._project_root = get_project_root()
         self.clients = []
         if not self._use_provider_manager:
             self._init_clients()
@@ -47,7 +50,7 @@ class SearchAggregator:
             from .provider_manager import SearchProviderManager
             self._manager = SearchProviderManager(
                 config_path=self._config_path,
-                project_root=self._config_path.parent.parent,
+                project_root=self._project_root,
             )
         return self._manager
 

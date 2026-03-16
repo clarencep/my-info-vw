@@ -21,8 +21,15 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-# Default YAML config path
-DEFAULT_CONFIG_PATH = Path(__file__).resolve().parent.parent.parent / "config" / "llm.yaml"
+
+def get_default_config_path() -> Path:
+    """Return the default config path, respecting MY_INFO_VW_CONFIG_DIR."""
+    from src.config import get_config_root
+    return get_config_root() / "llm.yaml"
+
+
+# Module-level default for backward compat (e.g. tests that read DEFAULT_CONFIG_PATH)
+DEFAULT_CONFIG_PATH = get_default_config_path()
 
 
 class LLMFallbackError(Exception):
@@ -38,7 +45,7 @@ class LLMManager:
     """Multi-provider LLM with automatic fallback."""
 
     def __init__(self, config_path: Optional[Path] = None):
-        self._config_path = config_path or DEFAULT_CONFIG_PATH
+        self._config_path = config_path or get_default_config_path()
         self._providers: dict[str, dict] = {}
         self._fallback_order: list[str] = []  # "provider/model"
         self._retry_on_error_codes: list[int] = []
