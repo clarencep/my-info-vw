@@ -1,7 +1,20 @@
+# LLM Provider Configuration
+#
+# Each provider needs:
+#   - name:          unique identifier
+#   - api_base:      API endpoint (must be OpenAI-compatible)
+#   - api_key_env:   environment variable holding the API key
+#   - models:        list of models with optional temperature overrides
+#
+# Tip: give each provider its own api_key_env (e.g. BIGMODEL_API_KEY,
+#      OPENAI_API_KEY, DASHSCOPE_API_KEY) so you can mix services without
+#      confusion.  If multiple providers share the same key, that also works.
+
 providers:
+  # ── BigModel (智谱) ─────────────────────────────────────────────────
   - name: bigmodel-glm47
     api_base: https://open.bigmodel.cn/api/coding/paas/v4
-    api_key_env: OPENAI_API_KEY
+    api_key_env: BIGMODEL_API_KEY
     models:
       - name: glm-4.7
         temperature: 0.7
@@ -10,15 +23,42 @@ providers:
 
   - name: bigmodel-light
     api_base: https://open.bigmodel.cn/api/coding/paas/v4
-    api_key_env: OPENAI_API_KEY
+    api_key_env: BIGMODEL_API_KEY
     models:
       - name: glm-4.5-air
         temperature: 0.7
+
+  # ── OpenAI ──────────────────────────────────────────────────────────
+  # - name: openai-gpt4o
+  #   api_base: https://api.openai.com/v1
+  #   api_key_env: OPENAI_API_KEY
+  #   models:
+  #     - name: gpt-4o
+  #       temperature: 0.7
+
+  # ── Aliyun DashScope (通义千问) ──────────────────────────────────────
+  # - name: aliyun-qwen
+  #   api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+  #   api_key_env: DASHSCOPE_API_KEY
+  #   models:
+  #     - name: qwen-max
+  #       temperature: 0.7
+  #     - name: qwen-plus
+  #       temperature: 0.7
+
+  # ── MiniMax ─────────────────────────────────────────────────────────
+  # - name: minimax
+  #   api_base: https://api.minimax.chat/v1
+  #   api_key_env: MINIMAX_API_KEY
+  #   models:
+  #     - name: MiniMax-M2.5
+  #       temperature: 0.7
 
 fallback_order:
   - bigmodel-glm47/glm-4.7
   - bigmodel-glm47/glm-4.5
   - bigmodel-light/glm-4.5-air
+  # - openai-gpt4o/gpt-4o
 
 retry_on_error_codes:
   - 1301
