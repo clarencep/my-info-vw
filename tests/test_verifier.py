@@ -8,6 +8,7 @@ load_dotenv()
 from src.agents.verifier import VerifierAgent, extract_json
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_extract_json():
     """Test JSON extraction in verifier."""
     response = '''```json
@@ -22,6 +23,7 @@ def test_verifier_extract_json():
     assert result["verdict"] == "TRUE"
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_verify_with_results():
     """Test verifier with search results."""
     agent = VerifierAgent()
@@ -41,6 +43,7 @@ def test_verifier_verify_with_results():
     assert "confidence" in result
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_verify_empty_results():
     """Test verifier with empty results."""
     agent = VerifierAgent()
@@ -52,6 +55,7 @@ def test_verifier_verify_empty_results():
     assert "verdict" in result
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_verify_multiple_results():
     """Test verifier with multiple results."""
     agent = VerifierAgent()

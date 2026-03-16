@@ -21,8 +21,15 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-# Default YAML config path
-DEFAULT_CONFIG_PATH = Path(__file__).resolve().parent.parent.parent / "config" / "llm.yaml"
+
+def get_default_config_path() -> Path:
+    """Return the default config path, respecting MY_INFO_VW_CONFIG_DIR."""
+    from src.config import get_config_root
+    return get_config_root() / "llm.yaml"
+
+
+# Module-level default for backward compat (e.g. tests that read DEFAULT_CONFIG_PATH)
+DEFAULT_CONFIG_PATH = get_default_config_path()
 
 
 class LLMFallbackError(Exception):
@@ -38,7 +45,7 @@ class LLMManager:
     """Multi-provider LLM with automatic fallback."""
 
     def __init__(self, config_path: Optional[Path] = None):
-        self._config_path = config_path or DEFAULT_CONFIG_PATH
+        self._config_path = config_path or get_default_config_path()
         self._providers: dict[str, dict] = {}
         self._fallback_order: list[str] = []  # "provider/model"
         self._retry_on_error_codes: list[int] = []
@@ -66,13 +73,14 @@ class LLMManager:
             cfg = yaml.safe_load(f) or {}
 
         # Parse providers
+        all_skipped = True
         for prov in cfg.get("providers", []):
             name = prov["name"]
             env_key = prov.get("api_key_env", "OPENAI_API_KEY")
             api_key = os.getenv(env_key, "")
 
-            # [P0] API Key pre-check
-            if not api_key:
+            # [P0] API Key pre-check: skip if missing, empty, or placeholder (all asterisks)
+            if not api_key or set(api_key.strip()) == {"*"}:
                 logger.warning(
                     "[LLM] API key not set for provider '%s' (env var: %s), skipping",
                     name, env_key,
@@ -84,6 +92,13 @@ class LLMManager:
                 "api_key": api_key,
                 "models": {m["name"]: m.get("temperature", 0.7) for m in prov.get("models", [])},
             }
+            all_skipped = False
+
+        if all_skipped and cfg.get("providers"):
+            raise RuntimeError(
+                "[LLM] No usable providers: all API keys are missing or unset. "
+                "Please configure at least one provider's API key in your environment."
+            )
 
         self._fallback_order = cfg.get("fallback_order", [])
         self._retry_on_error_codes = cfg.get("retry_on_error_codes", [1301, 1302, 429, 500, 503])

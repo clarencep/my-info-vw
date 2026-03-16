@@ -8,6 +8,7 @@ load_dotenv()
 from src.agents.message_parser import MessageParserAgent, extract_json
 
 
+@pytest.mark.needs_real_llm
 def test_extract_json_with_code_block():
     """Test JSON extraction from code block."""
     response = '''```json
@@ -23,6 +24,7 @@ def test_extract_json_with_code_block():
     assert len(result["key_entities"]) == 2
 
 
+@pytest.mark.needs_real_llm
 def test_extract_json_direct():
     """Test JSON extraction from direct JSON."""
     response = '{"main_claim": "Direct JSON", "key_entities": ["Test"]}'
@@ -31,6 +33,7 @@ def test_extract_json_direct():
     assert result["main_claim"] == "Direct JSON"
 
 
+@pytest.mark.needs_real_llm
 def test_extract_json_invalid():
     """Test JSON extraction with invalid JSON."""
     response = "This is not JSON at all"
@@ -38,6 +41,7 @@ def test_extract_json_invalid():
     assert result is None
 
 
+@pytest.mark.needs_real_llm
 def test_extract_json_partial():
     """Test JSON extraction with partial JSON."""
     response = '{"main_claim": "Partial'
@@ -45,6 +49,7 @@ def test_extract_json_partial():
     assert result is None
 
 
+@pytest.mark.needs_real_llm
 def test_message_parser_parse():
     """Test message parser parse method."""
     agent = MessageParserAgent()
@@ -55,6 +60,7 @@ def test_message_parser_parse():
     assert "key_entities" in result
 
 
+@pytest.mark.needs_real_llm
 def test_message_parser_factual():
     """Test parser with factual message."""
     agent = MessageParserAgent()
@@ -65,6 +71,7 @@ def test_message_parser_factual():
     assert "main_claim" in result
 
 
+@pytest.mark.needs_real_llm
 def test_message_parser_non_verifiable():
     """Test parser with non-verifiable message."""
     agent = MessageParserAgent()

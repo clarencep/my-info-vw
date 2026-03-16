@@ -8,6 +8,7 @@ load_dotenv()
 from src.workflows.check import InfoCheckWorkflow, CheckState, create_workflow
 
 
+@pytest.mark.needs_real_llm
 def test_check_state_creation():
     """Test CheckState creation."""
     state: CheckState = {
@@ -21,12 +22,14 @@ def test_check_state_creation():
     assert state["original_message"] == "test"
 
 
+@pytest.mark.needs_real_llm
 def test_workflow_graph():
     """Test workflow graph is created."""
     workflow = create_workflow()
     assert workflow.graph is not None
 
 
+@pytest.mark.needs_real_llm
 def test_workflow_nodes():
     """Test workflow has all nodes."""
     workflow = create_workflow()
@@ -37,6 +40,7 @@ def test_workflow_nodes():
     assert hasattr(workflow, "synthesizer")
 
 
+@pytest.mark.needs_real_llm
 def test_workflow_search_aggregator():
     """Test workflow has search aggregator."""
     workflow = create_workflow()
