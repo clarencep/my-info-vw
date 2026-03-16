@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+@pytest.mark.needs_real_llm
 def test_tavily_search_with_api():
     """Test Tavily search with actual API."""
     from src.search.tavily_search import TavilySearch
@@ -27,6 +28,7 @@ def test_tavily_search_with_api():
         assert "content" in r
 
 
+@pytest.mark.needs_real_llm
 def test_tavily_search_sync():
     """Test Tavily search sync method."""
     from src.search.tavily_search import TavilySearch
@@ -42,6 +44,7 @@ def test_tavily_search_sync():
     assert "搜索结果" in output or "No results" in output
 
 
+@pytest.mark.needs_real_llm
 def test_jina_search():
     """Test Jina search."""
     from src.search.jina_search import JinaSearch
@@ -52,6 +55,7 @@ def test_jina_search():
     assert isinstance(results, list)
 
 
+@pytest.mark.needs_real_llm
 def test_jina_search_fallback():
     """Test Jina search fallback."""
     from src.search.jina_search import JinaSearch
@@ -62,6 +66,7 @@ def test_jina_search_fallback():
     assert isinstance(results, list)
 
 
+@pytest.mark.needs_real_llm
 def test_news_search_init():
     """Test News search initialization."""
     from src.search.news_search import NewsSearch
@@ -71,6 +76,7 @@ def test_news_search_init():
     assert client.base_url == "https://newsapi.org/v2"
 
 
+@pytest.mark.needs_real_llm
 def test_news_search_fallback():
     """Test news search fallback to Google RSS."""
     from src.search.news_search import NewsSearch
@@ -82,6 +88,8 @@ def test_news_search_fallback():
     assert isinstance(results, list)
 
 
+@pytest.mark.needs_real_llm
+@pytest.mark.needs_real_llm
 def test_aggregator_all_sources():
     """Test aggregator with all sources."""
     from src.search.aggregator import get_aggregator
@@ -96,6 +104,7 @@ def test_aggregator_all_sources():
         assert "search_source" in r
 
 
+@pytest.mark.needs_real_llm
 def test_aggregator_parallel():
     """Test aggregator parallel search."""
     from src.search.aggregator import get_aggregator

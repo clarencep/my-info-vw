@@ -8,6 +8,7 @@ load_dotenv()
 from src.agents.search_query import SearchQueryAgent
 
 
+@pytest.mark.needs_real_llm
 def test_search_query_agent_init():
     """Test search query agent initialization."""
     agent = SearchQueryAgent()
@@ -15,6 +16,7 @@ def test_search_query_agent_init():
     assert agent.llm is not None
 
 
+@pytest.mark.needs_real_llm
 def test_search_query_generation():
     """Test search query generation."""
     agent = SearchQueryAgent()
@@ -31,6 +33,7 @@ def test_search_query_generation():
     assert len(queries) > 0
 
 
+@pytest.mark.needs_real_llm
 def test_search_query_with_empty_entities():
     """Test query generation with empty entities."""
     agent = SearchQueryAgent()
@@ -45,6 +48,7 @@ def test_search_query_with_empty_entities():
     assert isinstance(queries, list)
 
 
+@pytest.mark.needs_real_llm
 def test_search_query_fallback():
     """Test query generation fallback."""
     agent = SearchQueryAgent()

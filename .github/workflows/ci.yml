@@ -2,11 +2,29 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, dev, develop]
   pull_request:
-    branches: [main, develop]
+    branches: [main, dev, develop]
 
 jobs:
+  # ── Backend tests ──────────────────────────────────────────────────
+  backend-test:
+    name: Backend Test (Python 3.13)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Run tests with coverage
+        run: uv run pytest --cov=src --cov-report=term-missing -q
+
+  # ── Webapp lint & build ────────────────────────────────────────────
   webapp-lint:
     name: Webapp Lint
     runs-on: ubuntu-latest
@@ -25,6 +43,7 @@ jobs:
         working-directory: ./webapp
         run: bun run build
 
+  # ── Webapp tests ───────────────────────────────────────────────────
   webapp-test:
     name: Webapp Test
     runs-on: ubuntu-latest

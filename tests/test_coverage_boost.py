@@ -10,6 +10,7 @@ load_dotenv()
 
 # === Tests for aggregator.py (lines 22-23, 27-28, 32-33) ===
 
+@pytest.mark.needs_real_llm
 def test_aggregator_error_handling():
     """Test aggregator handles client errors."""
     from src.search.aggregator import SearchAggregator
@@ -31,6 +32,7 @@ def test_aggregator_error_handling():
         agg.clients[0] = (source_name, original_client)
 
 
+@pytest.mark.needs_real_llm
 def test_aggregator_no_clients():
     """Test aggregator with no clients."""
     from src.search.aggregator import SearchAggregator
@@ -42,6 +44,7 @@ def test_aggregator_no_clients():
 
 # === Tests for jina_search.py (lines 25-28, 62) ===
 
+@pytest.mark.needs_real_llm
 def test_jina_search_api_error():
     """Test Jina search handles API errors."""
     from src.search.jina_search import JinaSearch
@@ -56,6 +59,7 @@ def test_jina_search_api_error():
         assert isinstance(results, list)
 
 
+@pytest.mark.needs_real_llm
 def test_jina_search_fallback_error():
     """Test Jina fallback with error."""
     from src.search.jina_search import JinaSearch
@@ -67,6 +71,7 @@ def test_jina_search_fallback_error():
 
 # === Tests for news_search.py (lines 35-40, 80) ===
 
+@pytest.mark.needs_real_llm
 def test_news_search_with_api_key():
     """Test News search with API key."""
     import os
@@ -81,6 +86,7 @@ def test_news_search_with_api_key():
     del os.environ["NEWS_API_KEY"]
 
 
+@pytest.mark.needs_real_llm
 def test_news_search_api_error():
     """Test News search handles API errors."""
     from src.search.news_search import NewsSearch
@@ -97,6 +103,7 @@ def test_news_search_api_error():
 
 # === Tests for tavily_search.py (lines 19, 48-61, 66) ===
 
+@pytest.mark.needs_real_llm
 def test_tavily_search_error():
     """Test Tavily handles errors."""
     from src.search.tavily_search import TavilySearch
@@ -110,6 +117,7 @@ def test_tavily_search_error():
         assert isinstance(results, list)
 
 
+@pytest.mark.needs_real_llm
 def test_tavily_search_no_api_key_actual():
     """Test Tavily with no API key."""
     from src.search.tavily_search import TavilySearch
@@ -129,6 +137,7 @@ def test_tavily_search_no_api_key_actual():
 
 # === Tests for workflows/check.py (lines 103-113, 118) ===
 
+@pytest.mark.needs_real_llm
 def test_workflow_parse_node():
     """Test workflow parse node."""
     from src.workflows.check import InfoCheckWorkflow
@@ -140,6 +149,7 @@ def test_workflow_parse_node():
     assert "parsed" in result
 
 
+@pytest.mark.needs_real_llm
 def test_workflow_generate_queries_node():
     """Test workflow generate queries node."""
     from src.workflows.check import InfoCheckWorkflow
@@ -154,6 +164,7 @@ def test_workflow_generate_queries_node():
     assert "queries" in result
 
 
+@pytest.mark.needs_real_llm
 def test_workflow_search_node():
     """Test workflow search node."""
     from src.workflows.check import InfoCheckWorkflow
@@ -168,6 +179,7 @@ def test_workflow_search_node():
     assert "search_results" in result
 
 
+@pytest.mark.needs_real_llm
 def test_workflow_verify_node():
     """Test workflow verify node."""
     from src.workflows.check import InfoCheckWorkflow
@@ -182,6 +194,7 @@ def test_workflow_verify_node():
     assert "verification" in result
 
 
+@pytest.mark.needs_real_llm
 def test_workflow_synthesize_node():
     """Test workflow synthesize node."""
     from src.workflows.check import InfoCheckWorkflow
@@ -199,6 +212,7 @@ def test_workflow_synthesize_node():
     assert "report" in result
 
 
+@pytest.mark.needs_real_llm
 def test_workflow_run():
     """Test workflow run method."""
     from src.workflows.check import create_workflow
@@ -210,6 +224,7 @@ def test_workflow_run():
 
 # === Tests for search_query.py fallback paths ===
 
+@pytest.mark.needs_real_llm
 def test_search_query_fallback_with_entities():
     """Test search query fallback with entities."""
     from src.agents.search_query import SearchQueryAgent
@@ -242,6 +257,7 @@ def test_search_query_fallback_with_entities():
     assert isinstance(result, list)
 
 
+@pytest.mark.needs_real_llm
 def test_search_query_fallback_no_entities():
     """Test search query fallback with no entities."""
     from src.agents.search_query import SearchQueryAgent
@@ -263,6 +279,7 @@ def test_search_query_fallback_no_entities():
     assert isinstance(result, list)
 
 
+@pytest.mark.needs_real_llm
 def test_search_query_json_list_response():
     """Test when LLM returns JSON list."""
     from src.agents.search_query import SearchQueryAgent
@@ -286,6 +303,7 @@ def test_search_query_json_list_response():
 
 # === Tests for verifier.py fallback paths ===
 
+@pytest.mark.needs_real_llm
 def test_verifier_extract_nested_braces():
     """Test JSON extraction with nested braces."""
     from src.agents.verifier import extract_json
@@ -296,6 +314,7 @@ def test_verifier_extract_nested_braces():
     assert result is not None
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_extract_malformed_json():
     """Test JSON extraction with malformed JSON."""
     from src.agents.verifier import extract_json
@@ -307,6 +326,7 @@ def test_verifier_extract_malformed_json():
     assert result is None or isinstance(result, dict)
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_verify_fallback():
     """Test verifier fallback path."""
     from src.agents.verifier import VerifierAgent
@@ -331,6 +351,7 @@ def test_verifier_verify_fallback():
     assert "verdict" in result
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_verify_valid_json_no_verdict():
     """Test verifier with valid JSON but no verdict key."""
     from src.agents.verifier import VerifierAgent
@@ -354,6 +375,7 @@ def test_verifier_verify_valid_json_no_verdict():
 
 # 快速测试 - 覆盖 fallback 路径
 
+@pytest.mark.needs_real_llm
 def test_search_query_simple():
     """Simple test for search query."""
     from src.agents.search_query import SearchQueryAgent
@@ -362,6 +384,7 @@ def test_search_query_simple():
     assert agent.llm is not None
 
 
+@pytest.mark.needs_real_llm
 def test_verifier_simple():
     """Simple test for verifier."""
     from src.agents.verifier import VerifierAgent
