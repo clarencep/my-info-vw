@@ -22,7 +22,7 @@ def test_openai_model():
 
     # Create a simple test message
     message = HumanMessage(
-        content="Hello! Please respond with 'OpenAI model is working!'"
+        content="Hello! Please respond with 'Yeah! I am here.'"
     )
 
     # Invoke the model
