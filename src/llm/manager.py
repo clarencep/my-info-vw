@@ -57,6 +57,33 @@ class LLMManager:
         self._load_config()
 
     # ------------------------------------------------------------------
+    # API key resolution
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _resolve_api_key(env_key: str) -> str:
+        """Resolve API key for a provider.
+
+        Resolution order:
+        1. The env var specified by ``api_key_env`` (e.g. ``BIGMODEL_API_KEY``).
+        2. If ``api_key_env`` is *not* ``OPENAI_API_KEY`` and the above is empty,
+           fall back to ``OPENAI_API_KEY`` for backward compatibility.
+
+        This allows projects to migrate from the legacy ``OPENAI_API_KEY`` to
+        provider-specific names without breaking existing deployments.
+        """
+        api_key = os.getenv(env_key, "")
+        if not api_key and env_key != "OPENAI_API_KEY":
+            api_key = os.getenv("OPENAI_API_KEY", "")
+            if api_key:
+                logger.info(
+                    "[LLM] env var %s not set, using OPENAI_API_KEY as fallback "
+                    "(set %s to silence this message)",
+                    env_key, env_key,
+                )
+        return api_key
+
+    # ------------------------------------------------------------------
     # Configuration loading
     # ------------------------------------------------------------------
 
@@ -76,7 +103,7 @@ class LLMManager:
         for prov in cfg.get("providers", []):
             name = prov["name"]
             env_key = prov.get("api_key_env", "OPENAI_API_KEY")
-            api_key = os.getenv(env_key, "")
+            api_key = self._resolve_api_key(env_key)
 
             # [P0] API Key pre-check
             if not api_key:

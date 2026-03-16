@@ -54,7 +54,7 @@ class TestConfigLoading:
         assert mgr._legacy_mode is True
 
     def test_skip_provider_with_missing_api_key(self):
-        """Test provider is skipped when API key env var is empty."""
+        """Test provider is skipped when API key env var is empty (no fallback either)."""
         from src.llm.manager import LLMManager
 
         cfg = {
@@ -72,10 +72,18 @@ class TestConfigLoading:
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             yaml.dump(cfg, f)
             f.flush()
-            mgr = LLMManager(config_path=Path(f.name))
-
-        assert "no-key-provider" not in mgr._providers
-        os.unlink(f.name)
+            # Clear both the specific key and OPENAI_API_KEY to prevent fallback
+            old_openai = os.environ.pop("OPENAI_API_KEY", None)
+            old_nonexist = os.environ.pop("NONEXISTENT_API_KEY_12345", None)
+            try:
+                mgr = LLMManager(config_path=Path(f.name))
+                assert "no-key-provider" not in mgr._providers
+            finally:
+                if old_openai is not None:
+                    os.environ["OPENAI_API_KEY"] = old_openai
+                if old_nonexist is not None:
+                    os.environ["NONEXISTENT_API_KEY_12345"] = old_nonexist
+            os.unlink(f.name)
 
     def test_validate_fallback_order_unknown_entries(self, caplog):
         """Test that unknown fallback_order entries are logged as errors."""

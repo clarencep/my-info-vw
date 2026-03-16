@@ -49,8 +49,11 @@ LLM 层:
 ### 添加新的 LLM Provider
 
 1. 编辑 `config/llm.yaml`，在 `providers` 列表中添加条目
-2. 将 API Key 存放在环境变量中，通过 `api_key_env` 引用
+2. 为每个 provider 使用专属的 API Key 环境变量名（如 `BIGMODEL_API_KEY`、`DEEPSEEK_API_KEY`），通过 `api_key_env` 引用
 3. 在 `fallback_order` 中安排优先级
+4. 在 `.env` 或环境中设置对应的 API Key
+
+> **命名约定**：每个 LLM provider 应使用专属的环境变量名，避免多个 provider 共用 `OPENAI_API_KEY`。`LLMManager` 会自动向后兼容——若指定的 `api_key_env` 未设置，会回退查找 `OPENAI_API_KEY`。
 
 ## 编码规范
 

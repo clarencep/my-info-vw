@@ -48,16 +48,26 @@ uv sync
 
 ```yaml
 providers:
-  - name: my-provider
-    api_base: https://api.example.com/v1
+  - name: openai-gpt4
+    api_base: https://api.openai.com/v1
     api_key_env: OPENAI_API_KEY
     models:
       - name: gpt-4o
         temperature: 0.7
 
+  - name: bigmodel-glm
+    api_base: https://open.bigmodel.cn/api/coding/paas/v4
+    api_key_env: BIGMODEL_API_KEY    # 使用 provider 专属变量名
+    models:
+      - name: glm-4.7
+        temperature: 0.7
+
 fallback_order:
-  - my-provider/gpt-4o
+  - openai-gpt4/gpt-4o
+  - bigmodel-glm/glm-4.7
 ```
+
+> **API Key 命名约定**：建议每个 provider 使用专属的环境变量名（如 `BIGMODEL_API_KEY`、`DEEPSEEK_API_KEY`），而非复用 `OPENAI_API_KEY`。系统会自动向后兼容——如果指定的 `api_key_env` 未设置，会回退到 `OPENAI_API_KEY` 查找。
 
 **方式二：.env 单模型模式**
 
