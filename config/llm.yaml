@@ -1,7 +1,7 @@
 providers:
   - name: bigmodel-glm47
     api_base: https://open.bigmodel.cn/api/coding/paas/v4
-    api_key_env: OPENAI_API_KEY
+    api_key_env: BIGMODEL_API_KEY
     models:
       - name: glm-4.7
         temperature: 0.7
@@ -10,7 +10,7 @@ providers:
 
   - name: bigmodel-light
     api_base: https://open.bigmodel.cn/api/coding/paas/v4
-    api_key_env: OPENAI_API_KEY
+    api_key_env: BIGMODEL_API_KEY
     models:
       - name: glm-4.5-air
         temperature: 0.7

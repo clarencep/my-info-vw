@@ -48,16 +48,18 @@ uv sync
 
 ```yaml
 providers:
-  - name: my-provider
-    api_base: https://api.example.com/v1
-    api_key_env: OPENAI_API_KEY
+  - name: bigmodel-glm47
+    api_base: https://open.bigmodel.cn/api/coding/paas/v4
+    api_key_env: BIGMODEL_API_KEY
     models:
-      - name: gpt-4o
+      - name: glm-4.7
         temperature: 0.7
 
 fallback_order:
-  - my-provider/gpt-4o
+  - bigmodel-glm47/glm-4.7
 ```
+
+> **命名约定**：每个 LLM Provider 的 `api_key_env` 应使用与 Provider 相关的专属环境变量名（如 `BIGMODEL_API_KEY`），避免多个 Provider 共用 `OPENAI_API_KEY`。请在 `.env` 文件中设置对应的 key。
 
 **方式二：.env 单模型模式**
 
