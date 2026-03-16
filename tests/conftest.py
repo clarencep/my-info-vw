@@ -18,6 +18,10 @@ _CI = os.getenv("CI") == "true"
 if _CI and not os.getenv("BIGMODEL_API_KEY"):
     os.environ["BIGMODEL_API_KEY"] = "ci-dummy-key"
 
+# Ensure OPENAI_API_KEY exists for legacy mode and tests that reference it
+if _CI and not os.getenv("OPENAI_API_KEY"):
+    os.environ["OPENAI_API_KEY"] = "ci-dummy-openai-key"
+
 
 import pytest
 
