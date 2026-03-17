@@ -56,6 +56,33 @@ jobs:
       - name: Install dependencies
         working-directory: ./webapp
         run: bun install
-      - name: Run tests
+      - name: Run unit tests
         working-directory: ./webapp
         run: bun run test -- --run
+
+  # ── E2E tests ─────────────────────────────────────────────────────
+  e2e-test:
+    name: E2E Test (Playwright)
+    runs-on: ubuntu-latest
+    needs: webapp-lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        working-directory: ./webapp
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: ./webapp
+        run: npx playwright install --with-deps chromium
+      - name: Run E2E tests
+        working-directory: ./webapp
+        run: npx playwright test
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: webapp/playwright-report/
+          retention-days: 30
