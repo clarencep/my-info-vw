@@ -37,10 +37,18 @@ providers:
     env: {}
     description: "Baidu Search (no API key needed)"
 
+  - name: zhipu-web-search
+    enabled: true
+    command: "src/search/providers/zhipu_web_search_cli.py"
+    env:
+      ZHIPU_API_KEY: "${ZHIPU_API_KEY}"
+    description: "Zhipu AI Web Search (search_pro)"
+
 # 搜索时的 Provider 优先级/顺序
 search_order:
   - tavily
   - jina
+  - zhipu-web-search
 
 # 每个 provider 最大返回结果数
 max_results_per_provider: 5
