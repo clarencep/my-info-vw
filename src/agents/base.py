@@ -28,7 +28,7 @@ class BaseAgent:
     Falls back to legacy .env single-model mode when no YAML config exists.
     """
 
-    def __init__(self, system_prompt: str, temperature: float = 0.7):
+    def __init__(self, system_prompt: str, temperature: float = 0.3):
         self.llm_manager = get_llm_manager()
         self.system_prompt = SystemMessage(content=system_prompt)
         self.temperature = temperature

@@ -9,6 +9,13 @@
 # Tip: give each provider its own api_key_env (e.g. BIGMODEL_API_KEY,
 #      OPENAI_API_KEY, DASHSCOPE_API_KEY) so you can mix services without
 #      confusion.  If multiple providers share the same key, that also works.
+#
+# Temperature guidelines:
+#   0.1 – 0.3  Verification / parsing / extraction (high determinism)
+#   0.3 – 0.5  Summarization / synthesis
+#   0.5 – 0.8  Creative writing / open-ended generation
+#
+# Individual agents may override these values at call time.
 
 providers:
   # ── OpenAI ──────────────────────────────────────────────────────────
@@ -17,7 +24,7 @@ providers:
     api_key_env: OPENAI_API_KEY
     models:
       - name: gpt-4o
-        temperature: 0.7
+        temperature: 0.3
 
   # ── Aliyun DashScope (通义千问) ──────────────────────────────────────
   - name: aliyun-qwen
@@ -25,9 +32,9 @@ providers:
     api_key_env: DASHSCOPE_API_KEY
     models:
       - name: qwen-max
-        temperature: 0.7
+        temperature: 0.3
       - name: qwen-plus
-        temperature: 0.7
+        temperature: 0.3
 
   # ── BigModel (智谱) ─────────────────────────────────────────────────
   - name: bigmodel-cn
@@ -35,11 +42,11 @@ providers:
     api_key_env: BIGMODEL_API_KEY
     models:
       - name: glm-4.7
-        temperature: 0.7
+        temperature: 0.3
       - name: glm-4.5
-        temperature: 0.7
+        temperature: 0.3
       - name: glm-4.5-air
-        temperature: 0.7
+        temperature: 0.3
 
   # ── MiniMax ─────────────────────────────────────────────────────────
   - name: minimax
@@ -47,7 +54,7 @@ providers:
     api_key_env: MINIMAX_API_KEY
     models:
       - name: MiniMax-M2.5
-        temperature: 0.7
+        temperature: 0.3
 
 fallback_order:
   - bigmodel-cn/glm-4.5-air
