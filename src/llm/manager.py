@@ -90,7 +90,7 @@ class LLMManager:
             self._providers[name] = {
                 "api_base": prov.get("api_base"),
                 "api_key": api_key,
-                "models": {m["name"]: m.get("temperature", 0.7) for m in prov.get("models", [])},
+                "models": {m["name"]: m.get("temperature", 0.3) for m in prov.get("models", [])},
             }
             all_skipped = False
 
@@ -125,7 +125,7 @@ class LLMManager:
     # LLM instance management
     # ------------------------------------------------------------------
 
-    def _get_llm(self, provider_name: str, model_name: str, temperature: float = 0.7) -> ChatOpenAI:
+    def _get_llm(self, provider_name: str, model_name: str, temperature: float = 0.3) -> ChatOpenAI:
         """Get or create a cached ChatOpenAI instance (thread-safe)."""
         key = f"{provider_name}/{model_name}"
         with self._lock:
@@ -139,7 +139,7 @@ class LLMManager:
                 )
             return self._llm_instances[key]
 
-    def _get_legacy_llm(self, temperature: float = 0.7) -> ChatOpenAI:
+    def _get_legacy_llm(self, temperature: float = 0.3) -> ChatOpenAI:
         """Single-model mode from .env."""
         return ChatOpenAI(
             openai_api_base=os.getenv("OPENAI_API_BASE_URL"),
@@ -204,7 +204,7 @@ class LLMManager:
             LLMFallbackError: when all models fail.
         """
         if self._legacy_mode:
-            llm = self._get_legacy_llm(temperature or 0.7)
+            llm = self._get_legacy_llm(temperature or 0.3)
             logger.info("[LLM] legacy mode: %s", os.getenv("OPENAI_MODEL", "glm-4.7"))
             return llm.invoke(messages)
 
@@ -253,7 +253,7 @@ class LLMManager:
 
         raise LLMFallbackError(errors)
 
-    def get_llm(self, temperature: float = 0.7) -> ChatOpenAI:
+    def get_llm(self, temperature: float = 0.3) -> ChatOpenAI:
         """Backward-compatible: return a single ChatOpenAI (first fallback entry or legacy)."""
         if self._legacy_mode:
             return self._get_legacy_llm(temperature)
